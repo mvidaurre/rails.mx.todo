@@ -1,14 +1,16 @@
-Given /^the following lists:$/ do |lists|
-  List.create!(lists.hashes)
+Dado /^que estoy registrado como usuario$/ do
+  User.create!(:name => "Usuario Cucumber")
 end
 
-When /^I delete the (\d+)(?:st|nd|rd|th) list$/ do |pos|
-  visit lists_path
-  within("table tr:nth-child(#{pos.to_i+1})") do
-    click_link "Destroy"
-  end
+Cuando /^creo un nueva lista$/ do
+  visit new_list_path
+  fill_in(:name, :with => "Mis Pendientes de Trabajo")
+  click_button("Crear")
+  page.body.should =~ /La lista se creo exitosamente/m
 end
 
-Then /^I should see the following lists:$/ do |expected_lists_table|
-  expected_lists_table.diff!(tableish('table tr', 'td,th'))
+Entonces /^se registra el nombre de la lista y se asocia conmigo$/ do
+  @list = List.first
+  @list.name.should == "Mis Pendientes de Trabajo"
+  @list.user.name.should == "Usuario Cucumber"
 end
